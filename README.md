@@ -13,7 +13,7 @@ TaskStreamr is a minimalist, yet powerful, task management API built entirely wi
 To get started with TaskStreamr, clone the repository and install the necessary dependencies:
 
 ```bash
-git clone [repository-link]
+git clone https://github.com/expeditus303/TaskStreamr.git
 cd TaskStreamr
 npm install
 ```
@@ -26,11 +26,11 @@ npm start
 ```
 
 ## Endpoints
-POST /tasks: Create a new task.
-GET /tasks: List all tasks.
-PUT /tasks/:id: Update a task by ID.
-DELETE /tasks/:id: Delete a task by ID.
-PATCH /tasks/:id/complete: Toggle task completion status.
+- **POST /tasks:** Create a new task.
+- **GET /tasks:** List all tasks.
+- **PUT /tasks/:id**: Update a task by ID.
+- **DELETE /tasks/:id**: Delete a task by ID.
+- **PATCH /tasks/:id/complete:** Toggle task completion status.
 
 ## Contributing
 Contributions are welcome! Please read the contributing guidelines before submitting pull requests.
