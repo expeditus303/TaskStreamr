@@ -1,0 +1,22 @@
+{
+  "name": "taskstreamr",
+  "version": "1.0.0",
+  "description": "## Overview TaskStreamr is a minimalist, yet powerful, task management API built entirely with Node.js. This project stands out by avoiding traditional frameworks like Express.js, focusing instead on leveraging the core capabilities of Node.js to manage and streamline tasks efficiently.",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node --watch --trace-warnings src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/expeditus303/TaskStreamr.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/expeditus303/TaskStreamr/issues"
+  },
+  "homepage": "https://github.com/expeditus303/TaskStreamr#readme"
+}
