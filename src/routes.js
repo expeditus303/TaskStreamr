@@ -56,14 +56,10 @@ export const routes = [
           );
       }
 
-      const task = await database.getById("tasks", id);
-      if (!task) {
-        return res
-          .writeHead(404)
-          .end(`Task not found: no task exists with the provided ID: ${id}.`);
-      }
+      const task = await getTaskOrRespondNotFound(id, res);
+      if (!task) return;
 
-			const current_date = new Date()
+      const current_date = new Date();
 
       const updatedTask = { ...task, updated_at: current_date };
       if (title) updatedTask.title = title;
@@ -81,4 +77,36 @@ export const routes = [
       }
     },
   },
+  {
+    method: "DELETE",
+    path: buildRoutePath("/tasks/:id"),
+    handler: async (req, res) => {
+      const { id } = req.params;
+
+      const task = await getTaskOrRespondNotFound(id, res);
+      if (!task) return;
+
+      try {
+        await database.delete("tasks", id);
+
+        return res.writeHead(200).end(`Task with ID ${id} has been permanently deleted`);
+      } catch (error) {
+        console.error("Error deleting task:", error);
+        return res
+          .writeHead(500)
+          .end("Internal Server Error: unable to update task.");
+      }
+    },
+  },
 ];
+
+async function getTaskOrRespondNotFound(id, res) {
+  const task = await database.getById("tasks", id);
+  if (!task) {
+    res
+      .writeHead(404)
+      .end(`Task not found: no task exists with the provided ID: ${id}.`);
+    return null;
+  }
+  return task;
+}
