@@ -98,6 +98,34 @@ export const routes = [
       }
     },
   },
+	{
+    method: "PATCH",
+    path: buildRoutePath("/tasks/:id/complete"),
+    handler: async (req, res) => {
+      const { id } = req.params;
+
+      const task = await getTaskOrRespondNotFound(id, res);
+      if (!task) return;
+
+      const current_date = new Date();
+
+			const updatedTask = {
+				...task,
+				completed_at: !task.completed_at ? current_date : null
+			};
+
+      try {
+        await database.update("tasks", id, updatedTask);
+        const taskJson = JSON.stringify(updatedTask);
+        return res.writeHead(200).end(taskJson);
+      } catch (error) {
+        console.error("Error completing task:", error);
+        return res
+          .writeHead(500)
+          .end("Internal Server Error: unable to complete task.");
+      }
+    },
+  },
 ];
 
 async function getTaskOrRespondNotFound(id, res) {
