@@ -16,7 +16,11 @@ export class Database {
   }
 
   #persist() {
-    fs.writeFile(databasePath, JSON.stringify(this.#database));
+    fs.writeFile(databasePath, JSON.stringify(this.#database)).catch(
+      (error) => {
+        console.error("Failed to persist data:", error);
+      }
+    );
   }
 
   select(table) {
@@ -27,12 +31,39 @@ export class Database {
 
   insert(table, data) {
     if (!this.#database[table]) {
-      this.#database[table] = []
+      this.#database[table] = [];
     }
-    this.#database[table].push(data)
+    this.#database[table].push(data);
 
-    this.#persist()
+    this.#persist();
 
-    return data
+    return data;
   }
+
+  getById(table, id) {
+    try {
+      const rowIndex = this.#database[table].findIndex((row) => row.id === id);
+      if (rowIndex < 0) return null;
+      return this.#database[table][rowIndex];
+    } catch (error) {
+      console.error("Error in getById:", error);
+      return error;
+    }
+  }
+
+  update(table, id, data) {
+    try {
+      const rowIndex = this.#database[table].findIndex((row) => row.id === id);
+      if (rowIndex > -1) {
+        this.#database[table][rowIndex] = { id, ...data };
+        this.#persist();
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Error in update:", error);
+      return error; 
+    }
+  }
+
 }
