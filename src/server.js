@@ -7,13 +7,15 @@ const server = http.createServer(async (req, res) => {
 
   await json(req, res);
 
-    const route = routes.find(route => {
-        return route.method === method && route.path.test(url)
-    })
+  const route = routes.find((route) => {
+    return route.method === method && route.path.test(url);
+  });
 
-    if(route) {
-        return route.handler(req, res)
-    }
+  if (route) {
+    return route.handler(req, res);
+  }
+
+  return res.writeHead(404).end("Not Found");
 });
 
 const PORT = 5000;

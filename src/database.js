@@ -30,5 +30,9 @@ export class Database {
       this.#database[table] = []
     }
     this.#database[table].push(data)
+
+    this.#persist()
+
+    return data
   }
 }
