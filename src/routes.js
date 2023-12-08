@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { Database } from "./database.js";
-import { buildRoutePath } from "./utils/build-route-path.js";
+import { buildRoutePath } from "./utils/buildRoutePath.js";
 
 const database = new Database();
 
@@ -9,7 +9,15 @@ export const routes = [
     method: "GET",
     path: buildRoutePath("/tasks"),
     handler: async (req, res) => {
-      const tasks = await database.select("tasks");
+      const { title, description } = req.query;
+      const decodedTitle = title ? decodeURIComponent(title) : undefined;
+      const decodedDescription = description ? decodeURIComponent(description) : undefined;
+      
+      const filters = {};
+      if (decodedTitle) filters.title = decodedTitle;
+      if (decodedDescription) filters.description = decodedDescription;
+
+      const tasks = await database.select("tasks", filters);
 
       const tasks_json = JSON.stringify(tasks);
 
@@ -22,6 +30,14 @@ export const routes = [
     path: buildRoutePath("/tasks"),
     handler: async (req, res) => {
       const { title, description } = req.body;
+
+      if (!title && !description) {
+        return res
+          .writeHead(400)
+          .end(
+            "Request invalid: both 'title' and 'description' must be provided"
+          );
+      }
 
       const current_date = new Date();
 
@@ -48,11 +64,11 @@ export const routes = [
       const { title, description } = req.body;
       const { id } = req.params;
 
-      if (title && description) {
+      if ((title && description) || (!title && !description)) {
         return res
           .writeHead(400)
           .end(
-            "Request invalid: either 'title' or 'description' must be provided, not both"
+            "Request invalid: either 'title' or 'description' must be provided."
           );
       }
 
@@ -89,7 +105,9 @@ export const routes = [
       try {
         await database.delete("tasks", id);
 
-        return res.writeHead(200).end(`Task with ID ${id} has been permanently deleted`);
+        return res
+          .writeHead(200)
+          .end(`Task with ID ${id} has been permanently deleted`);
       } catch (error) {
         console.error("Error deleting task:", error);
         return res
@@ -98,7 +116,7 @@ export const routes = [
       }
     },
   },
-	{
+  {
     method: "PATCH",
     path: buildRoutePath("/tasks/:id/complete"),
     handler: async (req, res) => {
@@ -109,10 +127,10 @@ export const routes = [
 
       const current_date = new Date();
 
-			const updatedTask = {
-				...task,
-				completed_at: !task.completed_at ? current_date : null
-			};
+      const updatedTask = {
+        ...task,
+        completed_at: !task.completed_at ? current_date : null,
+      };
 
       try {
         await database.update("tasks", id, updatedTask);

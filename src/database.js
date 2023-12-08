@@ -23,10 +23,32 @@ export class Database {
     );
   }
 
-  select(table) {
-    const data = this.#database[table] ?? [];
+  #removeAccents(str) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
 
-    return data;
+  select(table, filters = {}) {
+    const data = this.#database[table] ?? [];
+    let results = data;
+
+    if (Object.keys(filters).length) {
+      results = data.filter((item) => {
+        return;
+      });
+    }
+
+    if (Object.keys(filters).length) {
+      results = data.filter((item) => {
+        return Object.entries(filters).every(([key, filterValue]) => {
+          const itemValue = item[key]?.toString().toLowerCase();
+          return this.#removeAccents(itemValue).includes(
+            this.#removeAccents(filterValue.toLowerCase())
+          );
+        });
+      });
+    }
+
+    return results;
   }
 
   insert(table, data) {
@@ -71,7 +93,7 @@ export class Database {
       const rowIndex = this.#database[table].findIndex((row) => row.id === id);
       if (rowIndex > -1) {
         this.#database[table].splice(rowIndex, 1);
-        this.#persist();;
+        this.#persist();
         return true;
       }
       return false;
